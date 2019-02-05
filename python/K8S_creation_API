@@ -1,0 +1,73 @@
+import requests
+import json
+import urllib3
+import getpass
+
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+print("This script will create a K8S cluster on Nutanix using API Call")
+PCusername = input("Type PC username :")
+PCpassword = getpass.getpass()
+PC = input("Type prism Central IP :")
+
+PEUsername = input("Type PE username :")
+PEpassword = getpass.getpass()
+K8SName = input("Type Kubernetes cluster name")
+
+
+Karbonurl ='https://'+PC+':7050/acs/k8s/cluster'
+PCUrl = "https://"+PC+":9440/api/nutanix/v3/clusters/list"
+
+rPC = requests.post(PCUrl, auth=(PCusername, PCpassword), verify=False)
+cookies = rPC.cookies
+
+
+'''
+static variables, need to be changed
+'''
+networkuuid = 'bf934e39-c258-4e05-ad19-c9e671033b36'
+clusteruuid = '000560db-4650-0068-0000-00000000fe1e'
+image= '13ac6558-6745-4f17-b5ab-49ed32478cb1'
+osflavor = 'centos'
+workerMem = 8092
+workerDisk = 122880
+workerCPU = 4
+MasterCPU = 4
+MasterMem = 4096
+MasterDisk = 122880
+etcdnumber = 3
+etcdCPU = 2
+etcdmem = 8092
+etcdDisk = 40960
+version= '1.8.13'
+container ='ctr01'
+FS = 'ext4'
+'''
+End of static variables
+'''
+
+
+data =  {"name":K8SName,"description":"","vm_network":networkuuid,
+        "k8s_config":{"service_cluster_ip_range":"172.19.0.0/16","network_cidr":"172.20.0.0/16",
+        "fqdn":"","workers":[{"cpu":workerCPU,"memory_mib":workerMem,"image":image,
+        "disk_mib":workerDisk},{"cpu":workerCPU,"memory_mib":workerMem,"image":image,
+        "disk_mib":workerDisk},{"cpu":workerCPU,"memory_mib":workerMem,"image":image,
+        "disk_mib":workerDisk}],"masters":[{"cpu":MasterCPU,"memory_mib":MasterMem,"image":image,
+        "disk_mib":MasterDisk}],"os_flavor":osflavor,"network_subnet_len":24,"version":'v'+version},
+        "cluster_ref":clusteruuid,"logging_config":{"enable_app_logging":False},
+        "storage_class_config":{"metadata":{"name":"default-storageclass"},
+        "spec":{"cluster_ref":clusteruuid,"user":PEUsername,"password":PEpassword,
+        "storage_container":container, "file_system":FS,"flash_mode":False}},
+        "etcd_config":{"num_instances":etcdnumber,
+        "name":K8SName,"resource_config":{"cpu":etcdCPU,"memory_mib":etcdmem,
+        "image":image, "disk_mib":40960}}}
+
+headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+
+r = requests.post(Karbonurl, auth=(PCusername, PCpassword), verify=False, data=json.dumps(data), headers=headers,
+                  cookies=cookies)
+
+output = r.json()
+
+print(output)

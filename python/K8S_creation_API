@@ -61,7 +61,7 @@ data =  {"name":K8SName,"description":"","vm_network":networkuuid,
         "storage_container":container, "file_system":FS,"flash_mode":False}},
         "etcd_config":{"num_instances":etcdnumber,
         "name":K8SName,"resource_config":{"cpu":etcdCPU,"memory_mib":etcdmem,
-        "image":image, "disk_mib":40960}}}
+        "image":image, "disk_mib":etcdDisk}}}
 
 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 

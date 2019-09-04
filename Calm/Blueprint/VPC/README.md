@@ -1,6 +1,19 @@
 ## VPC Blueprint
 This Calm blueprint allows the creation of a full Project environnement, including Quota Assignment, environment creation, VLAN creation, Marketplace initialization, User or Group assignment.  It will help customer and partners that needs to create a VPC-like experience in Calm. 
 
+The blueprint will do the following steps : 
+- Create Project
+- Create VLAN
+- Assign VLAN
+- Create environment
+- Assign environment to the project
+- Assign quota
+- Map Published application to the project
+- Get Active Directory uuid
+- Get user or group DN
+- Get user or group uuid
+- Add user or group to the project with consumer role as default
+
 To use this blueprint, import into a Prism Central running >= Calm 2.6.0, and fill in the Credentials and Variables mentioned below.
 
 ##### Credentials
